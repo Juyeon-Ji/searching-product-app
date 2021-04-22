@@ -115,6 +115,7 @@ export default function DrawerView() {
                     <Typography variant="h6" noWrap>
                         Product Viewer
                     </Typography>
+
                 </Toolbar>
             </AppBar>
             <Drawer

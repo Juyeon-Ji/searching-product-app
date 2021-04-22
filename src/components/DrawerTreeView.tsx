@@ -1,30 +1,20 @@
-import React from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import TreeItem from '@material-ui/lab/TreeItem';
+import axios from "axios";
 
-const data = {
+import useRequest from '../hooks/UseRequest';
+
+var treeData = {
     id: 'root',
     name: 'Parent',
-    children: [
-        {
-            id: '1',
-            name: 'Child - 1',
-        },
-        {
-            id: '3',
-            name: 'Child - 3',
-            children: [
-                {
-                    id: '4',
-                    name: 'Child - 4',
-                },
-            ],
-        },
-    ],
+    children: [],
 };
+
 
 const useStyles = makeStyles({
     root: {
@@ -35,8 +25,38 @@ const useStyles = makeStyles({
     },
 });
 
+
+
 export default function DrawerTreeView() {
     const classes = useStyles();
+    const treeArr: [] =[]
+
+    const [response, loading, error] = useRequest(
+        '/categories'
+    );
+
+    if (loading) {
+        return <div>로딩중..</div>;
+    }
+
+    if (error) {
+        return <div>에러 발생!</div>;
+    }
+
+    if (!response) return null;
+    else{
+
+        // @ts-ignore
+        response.data.forEach((treeItem: object) => {
+            // @ts-ignore
+            treeArr.push(Object.values(treeItem).pop())
+        })
+        // treeData = treeArr
+    }
+
+
+
+
 
     const renderTree = (nodes: { id: any; name: any; children: any; }) => (
         <TreeItem key={nodes.id} nodeId={nodes.id} label={nodes.name}>
@@ -51,7 +71,12 @@ export default function DrawerTreeView() {
             defaultExpanded={['root']}
             defaultExpandIcon={<ChevronRightIcon />}
         >
-            {renderTree(data)}
+            {
+                treeArr.map((treeData, idx) => {
+                    return (renderTree(treeData))
+                })
+            }
+
         </TreeView>
     );
 }

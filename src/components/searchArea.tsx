@@ -9,6 +9,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Grid from '@material-ui/core/Grid';
 
 import MenuItem from '@material-ui/core/MenuItem';
+import useRequest from "../hooks/UseRequest";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -30,8 +31,33 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+const KeyCodes = {
+    comma: 188,
+    enter: 13,
+};
+
+const delimiters = [KeyCodes.comma, KeyCodes.enter];
+
 export default function SearchArea() {
     const classes = useStyles();
+    const serachData = ''
+
+
+
+    const handleKeyPress = (e: {
+        target: any;
+        key: string; }) => {
+
+        if (e.key === "Enter") {
+            console.log(e.target.value)
+            let keyword = e.target.value
+            console.log('/api/'+keyword)
+
+        }
+    };
+
+
+
 
     return (
         <form className={classes.root} noValidate autoComplete="off">
@@ -46,7 +72,9 @@ export default function SearchArea() {
                     </FormControl>
                 </Grid>
                 <Grid item xs={10}>
-                    <TextField id="outlined-basic" variant="outlined" className={classes.textField}/>
+                    <TextField id="outlined-basic" variant="outlined" onKeyPress={handleKeyPress}
+                               placeholder="검색어를 입력해 주세요."
+                               className={classes.textField}/>
                 </Grid>
             </Grid>
         </form>

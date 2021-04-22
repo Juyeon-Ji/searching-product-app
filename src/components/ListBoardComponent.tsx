@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -8,39 +8,25 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 
-import Pagination from '@material-ui/lab/Pagination';
-
-import BoardService from '../service/BoardService';
-
+import PaginationView from "./PaginationView";
+import UseRequest from "../hooks/UseRequest";
+import {numbers} from "@material/top-app-bar/constants";
+import axios from "axios";
 
 const useStyles = makeStyles((theme) =>({
-    paginationDiv:{
-        padding: 20,
-        width: '100%',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    pagination:{
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
     table: {
         minWidth: 650,
     },
 }));
 
 
-const rowsData = [
+let rowsData = [
     createData("24", "https://shopping-phinf.pstatic.net/main_1805448/18054489982.20210303172646.jpg?type=f640",
-        "더블에이 A4용지 복사용지 80g 2500매", {}),
-    createData("37", "https://shopping-phinf.pstatic.net/main_8426728/8426728643.20150409110001.jpg?type=f640",
-        "카시오 공학용 계산기 FX-570EX", {}),
-    createData("25", "https://shopping-phinf.pstatic.net/main_1185933/11859339924.20170925103429.jpg?type=f640",
-        "LAMY 사파리 만년필", {}),]
+        "더블에이 A4용지 복사용지 80g 2500매", {})]
 
 const columnsData = [
         {
-            field: "img",
+            field: "imageUrl",
             headerName: "Image",
             width: "5em"
         },
@@ -50,30 +36,58 @@ const columnsData = [
             width: "5em"
         },
         {
-            field: "detailInfo",
+            field: "option",
             headerName: "Detail Info",
-            width: "5em"
+            // width: "5em"
         },
     ]
 
-function componentDidMount() {
-    BoardService.getBoards().then((res) => {
-        // this.setState({ boards: res.data});
-    });
-}
 
-function createData(id:string, img:string, title: string,   detailInfo:object) {
-    return { id, img,title, detailInfo };
+function createData(id:string, imageUrl:string, title: string,   option:object) {
+    return { id, imageUrl,title, option };
 }
 
 
 export default function ProductsTable() {
     const classes = useStyles();
+    const rowData = []
+    const [pageNum, setPageNum] = useState(1);
 
+    var [response, loading, error, setResponse] = UseRequest(
+        '/products/'+pageNum
+    );
+
+    if (loading) {
+        return <div>로딩중..</div>;
+    }
+
+    if (error) {
+        return <div>에러 발생!</div>;
+    }
+
+    if (!response) return null;
+    else{
+        console.log("======board data response")
+        console.log(response)
+        // @ts-ignore
+
+        // @ts-ignore
+        if(response){
+            // @ts-ignore
+            console.log(response.data)
+
+            // @ts-ignore
+            rowsData = response.data
+        }
+
+    }
+    const setPageNumber = (pageNumber:number) =>{
+        console.log("here is parent")
+        // @ts-ignore
+        setPageNum(pageNumber)
+
+    }
     return (
-        // <div style={{ height: 400, width: '100%' }}>
-        //     <DataGrid pagination {...data} />
-        // </div>
         <div>
             <TableContainer component={Paper}>
                 <Table className={classes.table} aria-label="simple table">
@@ -87,19 +101,20 @@ export default function ProductsTable() {
                     <TableBody>
                         {rowsData.map((row) => (
                             <TableRow key={row.id}>
-                                <TableCell component="th" scope="row">
-                                    <img src={row.img} style={{maxHeight: "5em", maxWidth: "5em"}}/>
+                                <TableCell component="th" scope="row" style={{minWidth: "5em"}}>
+                                    <img src={row.imageUrl} style={{maxHeight: "5em", maxWidth: "5em"}}/>
                                 </TableCell>
-                                <TableCell align="right">{row.title}</TableCell>
-                                <TableCell align="right">{"detailInfo"}</TableCell>
+                                <TableCell align="right" style={{maxWidth: "5em"}}>{row.title}</TableCell>
+                                <TableCell align="right">{row.option}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
             </TableContainer>
-            <div className={classes.paginationDiv} >
-                <Pagination className={classes.pagination} count={100} color="secondary" />
-            </div>
+            <PaginationView
+                setPageNumber={setPageNumber}
+                value={ pageNum }
+            />
 
         </div>
 
