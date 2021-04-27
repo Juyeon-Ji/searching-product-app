@@ -17,69 +17,12 @@ import SearchArea from "./components/searchArea";
 import PaginationView from "./components/PaginationView";
 import UseRequest from "./hooks/UseRequest";
 
-import queryString from "query-string"
 
 function App() {
-
-    const drawerWidth = 240;
 
     const useStyles = makeStyles((theme) => ({
         root: {
             display: 'flex',
-        },
-        toolbar: {
-            paddingRight: 24, // keep right padding when drawer closed
-        },
-        toolbarIcon: {
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-            padding: '0 8px',
-            ...theme.mixins.toolbar,
-        },
-        appBar: {
-            zIndex: theme.zIndex.drawer + 1,
-            transition: theme.transitions.create(['width', 'margin'], {
-                easing: theme.transitions.easing.sharp,
-                duration: theme.transitions.duration.leavingScreen,
-            }),
-        },
-        appBarShift: {
-            marginLeft: drawerWidth,
-            width: `calc(100% - ${drawerWidth}px)`,
-            transition: theme.transitions.create(['width', 'margin'], {
-                easing: theme.transitions.easing.sharp,
-                duration: theme.transitions.duration.enteringScreen,
-            }),
-        },
-        menuButton: {
-            marginRight: 36,
-        },
-        menuButtonHidden: {
-            display: 'none',
-        },
-        title: {
-            flexGrow: 1,
-        },
-        drawerPaper: {
-            position: 'relative',
-            whiteSpace: 'nowrap',
-            width: drawerWidth,
-            transition: theme.transitions.create('width', {
-                easing: theme.transitions.easing.sharp,
-                duration: theme.transitions.duration.enteringScreen,
-            }),
-        },
-        drawerPaperClose: {
-            overflowX: 'hidden',
-            transition: theme.transitions.create('width', {
-                easing: theme.transitions.easing.sharp,
-                duration: theme.transitions.duration.leavingScreen,
-            }),
-            width: theme.spacing(7),
-            [theme.breakpoints.up('sm')]: {
-                width: theme.spacing(9),
-            },
         },
         appBarSpacer: theme.mixins.toolbar,
         content: {
@@ -97,72 +40,82 @@ function App() {
             overflow: 'auto',
             flexDirection: 'column',
         },
-        fixedHeight: {
-            height: 240,
-        },
     }));
 
     const classes = useStyles();
-    const [open, setOpen] = React.useState(true);
     const [param, setPram] = React.useState({
-        queryString:"오리", // 검색어
+        queryString:"", // 검색어
         field:"title", // 필드는 일단 고정입니다.
         filterType:"ALL", // 일단 고정인데 CATEGORY, TITLE 이라는 형태가 있습니다. 콤보박스용이에요.
         pageIndex:1, // pageindex는 기본적으로 0으로 세팅되어있습니다.
-        // cid:"50000158" // cid는 개발 다되면 주시면 됩니다.
+        // cid:"50001039" // cid는 개발 다되면 주시면 됩니다.
 });
 
-    console.log(param)
+    const [productsUrl, setProductsUrl] = React.useState(('/api/search?'+ getQueryString(param)));
+    const [countUrl, setCountUrl] = React.useState(('/api/search/count?'+ getQueryString(param)));
 
-    const handleDrawerOpen = () => {
-        setOpen(true);
-    };
-    const handleDrawerClose = () => {
-        setOpen(false);
-    };
-    const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
-
-    function getQueryString(){
+    function getQueryString(data){
         let queryStirng = ''
         // queryString=오리&field=title&pageIndex=1&filterType=ALL
-        Object.keys(param).forEach(key => {
-            queryStirng += (key+"="+param[key]+"&")
+        Object.keys(data).forEach(key => {
+            queryStirng += (key+"="+data[key]+"&")
         })
 
-        console.log("queryStirng: "+ queryStirng)
         return queryStirng
     }
 
+    // const [pageCount, setPageCount] = React.useState(1);
+
     var [productsResponse, loading, error] = UseRequest(
-        '/api/search?'+ getQueryString()
+        productsUrl
+    );
+    var [countResponse, loading, error] = UseRequest(
+        countUrl
     );
 
-    if (loading) {
-        return <div>로딩중..</div>;
-    }
-
-    if (error) {
-        return <div>에러 발생!</div>;
-    }
-
-    if (!productsResponse) return null;
-    else{
-        console.log("======board data response")
-    }
 
     const setPageNumber = (pageNumber) =>{
-        console.log("here is Main")
         // @ts-ignore
         console.log(pageNumber)
+        param.pageIndex = pageNumber
+        getData()
+    }
+
+    const setCatId = (catid) =>{
+        // @ts-ignore
+        param.cid = catid
+        getData()
+    }
+
+    const setSearchKeyWords = (searchOption) =>{
+        console.log(searchOption)
+
+        param.pageIndex = 1
+
+        param.filterType = searchOption.field
+        param.queryString = searchOption.queryString
+        console.log(param)
+        getData()
+
+    }
+
+    function getData(){
+        setCountUrl('/api/search/count?'+ getQueryString(param))
+        setProductsUrl('/api/search?'+ getQueryString(param))
     }
 
 
 
+    const productsData = productsResponse? productsResponse.data : [{}]
+    const pageCount = countResponse? countResponse.data : 1
+    console.log()
     return (
 
         <div className={classes.root}>
             <CssBaseline />
-            <DrawerView/>
+            <DrawerView
+                setCatId = {setCatId}
+            />
 
             <main className={classes.content}>
                 <div className={classes.appBarSpacer} />
@@ -173,19 +126,22 @@ function App() {
                         <Grid item xs={12}>
                             <Paper className={classes.paper}>
                                 {/*<Orders />*/}
-                                <SearchArea/>
+                                <SearchArea
+                                    setSearchKeyWords={setSearchKeyWords}
+                                />
                             </Paper>
                         </Grid>
 
                         {/* Chart */}
                         <Grid item xs={12}>
                             <ListBoardComponent
-                                productsData ={productsResponse.data}
+                                productsData ={productsData}
                             />
                         </Grid>
                         <Grid item xs={12}>
                             <PaginationView
                                 setPageNumber={setPageNumber}
+                                pageCount={pageCount}
                             />
                         </Grid>
 

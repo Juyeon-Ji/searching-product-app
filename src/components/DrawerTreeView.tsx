@@ -27,7 +27,7 @@ const useStyles = makeStyles({
 
 
 
-export default function DrawerTreeView() {
+export default function DrawerTreeView(props:any) {
     const classes = useStyles();
     const treeArr: [] =[]
 
@@ -56,10 +56,20 @@ export default function DrawerTreeView() {
 
 
 
+    function clicked(event:any){
+        console.log("clicked: ", event.target.getAttribute('id'))
+    }
 
 
-    const renderTree = (nodes: { id: any; name: any; children: any; }) => (
-        <TreeItem key={nodes.id} nodeId={nodes.id} label={nodes.name}>
+    const renderTree = (nodes: { id: any; name: any; children: any; cid: any;}) => (
+        <TreeItem key={nodes.id} nodeId={nodes.id} label={nodes.name} id={nodes.cid}
+                  onClick = {(e) =>{
+                  if(nodes.children.length==0){
+                      console.log (nodes.cid)
+                      props.setCatId(nodes.cid)
+                  }
+                  }}
+        >
             {Array.isArray(nodes.children) ? nodes.children.map((node) => renderTree(node)) : null}
         </TreeItem>
     );

@@ -6,15 +6,12 @@ function UseRequest(url) {
     const [loading, setLoading] = useState(false);
     const [response, setResponse] = useState(null);
     const [error, setError] = useState(null);
-    console.log('UseRequest')
-    console.log(url)
     // 렌더링 될 때, 그리고 url 이 바뀔때만 실행됨
     useEffect(
         async () => {
             setError(null); // 에러 null 처리
             try {
                 setLoading(true); // 로딩중
-                console.log('useEffect')
                 console.log(url)
                 const res = await axios.get(url); // 실제 요청
                 setResponse(res); // response 설정

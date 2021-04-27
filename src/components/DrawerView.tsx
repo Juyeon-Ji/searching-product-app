@@ -78,7 +78,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function DrawerView() {
+export default function DrawerView(props:any) {
     const classes = useStyles();
     const theme = useTheme();
     const [open, setOpen] = React.useState(false);
@@ -90,6 +90,13 @@ export default function DrawerView() {
     const handleDrawerClose = () => {
         setOpen(false);
     };
+
+    const setCatId = (catid:any) =>{
+        console.log("here is drawerView")
+        // @ts-ignore
+        console.log(catid)
+        props.setCatId(catid)
+    }
 
     return (
         <div className={classes.root}>
@@ -137,7 +144,9 @@ export default function DrawerView() {
                     </IconButton>
                 </div>
 
-                <DrawerTreeView/>
+                <DrawerTreeView
+                    setCatId = {setCatId}
+                />
             </Drawer>
 
         </div>

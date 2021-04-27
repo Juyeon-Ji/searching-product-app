@@ -38,11 +38,12 @@ const KeyCodes = {
 
 const delimiters = [KeyCodes.comma, KeyCodes.enter];
 
-export default function SearchArea() {
+export default function SearchArea(props:any) {
     const classes = useStyles();
-    const serachData = ''
 
+    const [option, setOption] = React.useState('TITLE');
 
+    // const selectorValue = "TITLE"
 
     const handleKeyPress = (e: {
         target: any;
@@ -52,13 +53,17 @@ export default function SearchArea() {
 
             let keyword = e.target.value
 
-            const param = {queryString: keyword,
-                field: 'title',
+            const searchOption = {queryString: keyword,
+                field: option,
                 pageIndex : 0}
 
-            console.log('/api/search'+param.toString)
-
+            console.log("searchOption", searchOption)
+            props.setSearchKeyWords(searchOption)
         }
+    };
+
+    const handleChange = (event:any) => {
+        setOption(event.target.value);
     };
 
 
@@ -67,10 +72,11 @@ export default function SearchArea() {
             <Grid container>
                 <Grid item xs={2}>
                     <FormControl className={classes.formControl} >
-                        <TextField id="select" value="All" select>
-                            <MenuItem value={"All"}>전체</MenuItem>
-                            <MenuItem value={"ProductName"}>상품명</MenuItem>
-                            <MenuItem value={"DetailInfo"}>상세정보</MenuItem>
+                        <TextField id="select"
+                                   onChange={handleChange}
+                                   value={option} select>
+                            <MenuItem value={"ALL"}>전체</MenuItem>
+                            <MenuItem value={"TITLE"}>상품명</MenuItem>
                         </TextField>
                     </FormControl>
                 </Grid>

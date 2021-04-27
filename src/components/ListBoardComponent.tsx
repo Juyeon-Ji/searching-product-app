@@ -52,15 +52,6 @@ export default function ProductsTable(props:any) {
     const classes = useStyles();
     const rowData:[{id:"0", imageUrl:"", title:"", option:{}}] = props.productsData
 
-    // const [rowData, setRowData] = React.useState(rowSampleData);
-    // if(props.productsData){
-    //     console.log(props.productsData)
-    //     setRowData(props.productsData)
-    // }
-
-    console.log("Products table")
-
-
 
     return (
         <div>
@@ -80,6 +71,7 @@ export default function ProductsTable(props:any) {
                                     <img src={imageUrl} style={{maxHeight: "5em", maxWidth: "5em"}}/>
                                 </TableCell>
                                 <TableCell align="right" style={{maxWidth: "5em"}}>{title}</TableCell>
+
                                 {/*<TableCell align="right">{option}</TableCell>*/}
 
                             </TableRow>
