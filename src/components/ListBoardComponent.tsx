@@ -8,10 +8,10 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 
-import PaginationView from "./PaginationView";
+// import PaginationView from "./PaginationView";
 import UseRequest from "../hooks/UseRequest";
-import {numbers} from "@material/top-app-bar/constants";
-import axios from "axios";
+// import {numbers} from "@material/top-app-bar/constants";
+// import axios from "axios";
 
 const useStyles = makeStyles((theme) =>({
     table: {
@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) =>({
 }));
 
 
-let rowsData = [
+const rowData = [
     createData("24", "https://shopping-phinf.pstatic.net/main_1805448/18054489982.20210303172646.jpg?type=f640",
         "더블에이 A4용지 복사용지 80g 2500매", {})]
 
@@ -48,73 +48,46 @@ function createData(id:string, imageUrl:string, title: string,   option:object) 
 }
 
 
-export default function ProductsTable() {
+export default function ProductsTable(props:any) {
     const classes = useStyles();
-    const rowData = []
-    const [pageNum, setPageNum] = useState(1);
+    const rowData:[{id:"0", imageUrl:"", title:"", option:{}}] = props.productsData
 
-    var [response, loading, error, setResponse] = UseRequest(
-        '/products/'+pageNum
-    );
+    // const [rowData, setRowData] = React.useState(rowSampleData);
+    // if(props.productsData){
+    //     console.log(props.productsData)
+    //     setRowData(props.productsData)
+    // }
 
-    if (loading) {
-        return <div>로딩중..</div>;
-    }
+    console.log("Products table")
 
-    if (error) {
-        return <div>에러 발생!</div>;
-    }
 
-    if (!response) return null;
-    else{
-        console.log("======board data response")
-        console.log(response)
-        // @ts-ignore
 
-        // @ts-ignore
-        if(response){
-            // @ts-ignore
-            console.log(response.data)
-
-            // @ts-ignore
-            rowsData = response.data
-        }
-
-    }
-    const setPageNumber = (pageNumber:number) =>{
-        console.log("here is parent")
-        // @ts-ignore
-        setPageNum(pageNumber)
-
-    }
     return (
         <div>
             <TableContainer component={Paper}>
                 <Table className={classes.table} aria-label="simple table">
                     <TableHead>
                         <TableRow>
-                            {columnsData.map((col) => (
-                                    <TableCell align="right" style={{minWidth: col.width}}>{col.headerName}</TableCell>
+                            {columnsData.map(({field, headerName, width}) => (
+                                <TableCell key={field} align="right" style={{minWidth: width}}>{headerName}</TableCell>
                             ))}
                         </TableRow>
                     </TableHead>
-                    <TableBody>
-                        {rowsData.map((row) => (
-                            <TableRow key={row.id}>
+                    <TableBody key={"tableBody"}>
+                        {rowData.map(({id, imageUrl, title, option}) => (
+                            <TableRow key={id}>
                                 <TableCell component="th" scope="row" style={{minWidth: "5em"}}>
-                                    <img src={row.imageUrl} style={{maxHeight: "5em", maxWidth: "5em"}}/>
+                                    <img src={imageUrl} style={{maxHeight: "5em", maxWidth: "5em"}}/>
                                 </TableCell>
-                                <TableCell align="right" style={{maxWidth: "5em"}}>{row.title}</TableCell>
-                                <TableCell align="right">{row.option}</TableCell>
+                                <TableCell align="right" style={{maxWidth: "5em"}}>{title}</TableCell>
+                                {/*<TableCell align="right">{option}</TableCell>*/}
+
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
             </TableContainer>
-            <PaginationView
-                setPageNumber={setPageNumber}
-                value={ pageNum }
-            />
+
 
         </div>
 

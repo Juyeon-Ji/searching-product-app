@@ -49,14 +49,17 @@ export default function SearchArea() {
         key: string; }) => {
 
         if (e.key === "Enter") {
-            console.log(e.target.value)
+
             let keyword = e.target.value
-            console.log('/api/'+keyword)
+
+            const param = {queryString: keyword,
+                field: 'title',
+                pageIndex : 0}
+
+            console.log('/api/search'+param.toString)
 
         }
     };
-
-
 
 
     return (

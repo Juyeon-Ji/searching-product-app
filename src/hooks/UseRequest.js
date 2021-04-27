@@ -25,7 +25,7 @@ function UseRequest(url) {
         },
         [url] // url 이 바뀔때만 실행됨
     );
-    return [response, loading, error, setResponse]; // 현재 값들을 배열로 반환
+    return [response, loading, error]; // 현재 값들을 배열로 반환
 }
 
 export default UseRequest;

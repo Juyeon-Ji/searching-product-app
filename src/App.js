@@ -14,6 +14,10 @@ import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import SearchArea from "./components/searchArea";
+import PaginationView from "./components/PaginationView";
+import UseRequest from "./hooks/UseRequest";
+
+import queryString from "query-string"
 
 function App() {
 
@@ -100,6 +104,16 @@ function App() {
 
     const classes = useStyles();
     const [open, setOpen] = React.useState(true);
+    const [param, setPram] = React.useState({
+        queryString:"오리", // 검색어
+        field:"title", // 필드는 일단 고정입니다.
+        filterType:"ALL", // 일단 고정인데 CATEGORY, TITLE 이라는 형태가 있습니다. 콤보박스용이에요.
+        pageIndex:1, // pageindex는 기본적으로 0으로 세팅되어있습니다.
+        // cid:"50000158" // cid는 개발 다되면 주시면 됩니다.
+});
+
+    console.log(param)
+
     const handleDrawerOpen = () => {
         setOpen(true);
     };
@@ -107,6 +121,41 @@ function App() {
         setOpen(false);
     };
     const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+
+    function getQueryString(){
+        let queryStirng = ''
+        // queryString=오리&field=title&pageIndex=1&filterType=ALL
+        Object.keys(param).forEach(key => {
+            queryStirng += (key+"="+param[key]+"&")
+        })
+
+        console.log("queryStirng: "+ queryStirng)
+        return queryStirng
+    }
+
+    var [productsResponse, loading, error] = UseRequest(
+        '/api/search?'+ getQueryString()
+    );
+
+    if (loading) {
+        return <div>로딩중..</div>;
+    }
+
+    if (error) {
+        return <div>에러 발생!</div>;
+    }
+
+    if (!productsResponse) return null;
+    else{
+        console.log("======board data response")
+    }
+
+    const setPageNumber = (pageNumber) =>{
+        console.log("here is Main")
+        // @ts-ignore
+        console.log(pageNumber)
+    }
+
 
 
     return (
@@ -130,14 +179,21 @@ function App() {
 
                         {/* Chart */}
                         <Grid item xs={12}>
-                            <Paper className={classes.paper}>
-                                <ListBoardComponent />
-                            </Paper>
+                            <ListBoardComponent
+                                productsData ={productsResponse.data}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <PaginationView
+                                setPageNumber={setPageNumber}
+                            />
                         </Grid>
 
                     </Grid>
                 </Container>
             </main>
+
+
         </div>
 
     );

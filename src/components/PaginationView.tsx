@@ -26,6 +26,8 @@ export default function PaginationView(props:any) {
     const classes = useStyles();
     let pageNumber = props.value? props.value : 1;
 
+
+
     console.log("props: ", props)
     const click = (e: any, value: any) => {
         console.log(value)
