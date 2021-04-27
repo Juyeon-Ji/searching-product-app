@@ -28,17 +28,17 @@ const columnsData = [
         {
             field: "imageUrl",
             headerName: "Image",
-            width: "5em"
+            width: "1em"
         },
         {
             field: "title",
             headerName: "상품 명",
-            width: "5em"
+            width: "10em"
         },
         {
             field: "option",
             headerName: "Detail Info",
-            // width: "5em"
+            width: "10em"
         },
     ]
 
@@ -47,6 +47,25 @@ function createData(id:string, imageUrl:string, title: string,   option:object) 
     return { id, imageUrl,title, option };
 }
 
+function optionView(optionData: object){
+    if(optionData){
+        let optionString = ""
+        //
+        Object.keys(optionData).forEach(function(key, index) {
+            // @ts-ignore
+            optionString += (key + ": " + optionData[key])
+            if(index+1 != Object.keys(optionData).length){
+                optionString += " | "
+            }
+        })
+        return (<p>{optionString}</p>)
+
+
+    }
+    else{
+        return <p>-</p>
+    }
+}
 
 export default function ProductsTable(props:any) {
     const classes = useStyles();
@@ -60,19 +79,23 @@ export default function ProductsTable(props:any) {
                     <TableHead>
                         <TableRow>
                             {columnsData.map(({field, headerName, width}) => (
-                                <TableCell key={field} align="right" style={{minWidth: width}}>{headerName}</TableCell>
+                                <TableCell key={field} align="center" style={{maxWidth: width}}>{headerName}</TableCell>
                             ))}
                         </TableRow>
                     </TableHead>
                     <TableBody key={"tableBody"}>
+
                         {rowData.map(({id, imageUrl, title, option}) => (
                             <TableRow key={id}>
-                                <TableCell component="th" scope="row" style={{minWidth: "5em"}}>
+                                <TableCell align="center" component="th" scope="row" style={{maxWidth: "1em" }}>
                                     <img src={imageUrl} style={{maxHeight: "5em", maxWidth: "5em"}}/>
                                 </TableCell>
-                                <TableCell align="right" style={{maxWidth: "5em"}}>{title}</TableCell>
+                                <TableCell align="left" style={{maxWidth: "10em"}}>{title}</TableCell>
 
-                                {/*<TableCell align="right">{option}</TableCell>*/}
+                                <TableCell align="left" style={{maxWidth: "10em"}}>
+                                    {optionView(option)}
+                                    {/*{option?<p>test</p> : <p>-</p>}*/}
+                                </TableCell>
 
                             </TableRow>
                         ))}
