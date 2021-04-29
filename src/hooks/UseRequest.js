@@ -7,8 +7,10 @@ function UseRequest(url) {
     const [response, setResponse] = useState(null);
     const [error, setError] = useState(null);
     // 렌더링 될 때, 그리고 url 이 바뀔때만 실행됨
-    useEffect(
-        async () => {
+
+
+    useEffect(() => {
+        async function fetchData() {
             setError(null); // 에러 null 처리
             try {
                 setLoading(true); // 로딩중
@@ -17,11 +19,13 @@ function UseRequest(url) {
                 setResponse(res); // response 설정
             } catch (e) {
                 setError(e); // error 설정
+                console.log("Error: ", e)
             }
             setLoading(false); // 로딩 끝
-        },
-        [url] // url 이 바뀔때만 실행됨
-    );
+        }
+        fetchData();
+    }, [url]);
+
     return [response, loading, error]; // 현재 값들을 배열로 반환
 }
 

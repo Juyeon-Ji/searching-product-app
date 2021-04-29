@@ -4,12 +4,8 @@ import ListBoardComponent from './components/ListBoardComponent';
 import DrawerView from './components/DrawerView';
 
 import React from "react";
-
-
-import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import AppBar from '@material-ui/core/AppBar';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
@@ -17,6 +13,10 @@ import SearchArea from "./components/searchArea";
 import PaginationView from "./components/PaginationView";
 import UseRequest from "./hooks/UseRequest";
 
+import CircularProgress from '@material-ui/core/CircularProgress';
+
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 
 function App() {
 
@@ -31,19 +31,31 @@ function App() {
             overflow: 'auto',
         },
         container: {
-            paddingTop: theme.spacing(4),
-            paddingBottom: theme.spacing(4),
+            paddingTop: theme.spacing(2),
+            paddingBottom: theme.spacing(2),
         },
         paper: {
-            padding: theme.spacing(2),
+            padding: theme.spacing(1),
             display: 'flex',
             overflow: 'auto',
             flexDirection: 'column',
         },
+        productsArea:{
+            padding: theme.spacing(1),
+            height: "75em",
+            display: 'flex',
+            overflow: 'auto',
+            flexDirection: 'column',
+            verticalAlign: 'middle',
+
+        },
+        number:{
+            fontSize: 12,
+        }
     }));
 
     const classes = useStyles();
-    const [param, setPram] = React.useState({
+    const [param] = React.useState({
         queryString:"", // 검색어
         field:"title", // 필드는 일단 고정입니다.
         filterType:"ALL", // 일단 고정인데 CATEGORY, TITLE 이라는 형태가 있습니다. 콤보박스용이에요.
@@ -51,8 +63,7 @@ function App() {
         // cid:"50001039" // cid는 개발 다되면 주시면 됩니다.
 });
 
-    const [productsUrl, setProductsUrl] = React.useState(('/api/search?'+ getQueryString(param)));
-    const [countUrl, setCountUrl] = React.useState(('/api/search/count?'+ getQueryString(param)));
+    const [productsUrl, setProductsUrl] = React.useState(('/v1/search/products?'+ getQueryString(param)));
 
     function getQueryString(data){
         let queryStirng = ''
@@ -64,14 +75,10 @@ function App() {
         return queryStirng
     }
 
-    // const [pageCount, setPageCount] = React.useState(1);
-
     var [productsResponse, loading, error] = UseRequest(
         productsUrl
     );
-    var [countResponse, loading, error] = UseRequest(
-        countUrl
-    );
+
 
 
     const setPageNumber = (pageNumber) =>{
@@ -100,14 +107,73 @@ function App() {
     }
 
     function getData(){
-        setCountUrl('/api/search/count?'+ getQueryString(param))
-        setProductsUrl('/api/search?'+ getQueryString(param))
+        setProductsUrl('/v1/search/products?'+ getQueryString(param))
     }
 
+    function checkSatus(){
+        if (loading) {
+            return (
+                <Paper className={classes.productsArea}>
+                    <Grid container justify={"center"} alignItems={"center"} height={"100%"}
+                    >
+                        <CircularProgress />
+                    </Grid>
+                </Paper>)
+        }
 
+        if (error) {
+            return (
+                <Paper className={classes.productsArea}>
+                    <Grid container justify={"center"} alignItems={"center"} height={"100%"}
+                    >
+                        <Typography variant="h3" gutterBottom>
+                            Error가 발생되었습니다.
+                        </Typography>
+                        <Typography variant="h6" gutterBottom>
+                            {error}
+                        </Typography>
+                    </Grid>
+                </Paper>)
+        }
+        if (!productsResponse){
+            return (
+                <Paper className={classes.productsArea}>
+                    <Grid container justify={"center"} alignItems={"center"} height={"100%"}
+                    >
+                        <Typography variant="h3" gutterBottom>
+                            응답이 없습니다.
+                        </Typography>
+                    </Grid>
+                </Paper>)
+        }
+        if (productsData.length === 0){
+            return (
+                <Paper className={classes.productsArea}>
+                    <Grid container justify={"center"} alignItems={"center"}
+                    >
+                        <Typography variant="h5" gutterBottom>
+                            상품이 없습니다.
+                        </Typography>
+                    </Grid>
+                </Paper>)
+        }
+        else {
+            return (
+                <div>
+                    <Button className={classes.nuproductsAreamber} variant="contained">
+                        전체 {totalcount}
+                    </Button>
+                    <ListBoardComponent
+                    productsData ={productsData}/>
+                </div>
+            )
+        }
+    }
 
     const productsData = productsResponse? productsResponse.data : [{}]
-    const pageCount = countResponse? countResponse.data : 1
+    const pageCount = productsResponse? productsResponse.headers.pagecount : 1
+    const totalcount = productsResponse? productsResponse.headers.totalcount : 1
+
     console.log()
     return (
 
@@ -133,10 +199,8 @@ function App() {
                         </Grid>
 
                         {/* Chart */}
-                        <Grid item xs={12}>
-                            <ListBoardComponent
-                                productsData ={productsData}
-                            />
+                        <Grid item xs={12} >
+                            {checkSatus()}
                         </Grid>
                         <Grid item xs={12}>
                             <PaginationView

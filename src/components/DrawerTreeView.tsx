@@ -1,38 +1,35 @@
-
-import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import React from 'react';
+import {makeStyles} from '@material-ui/core/styles';
 import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import TreeItem from '@material-ui/lab/TreeItem';
-import axios from "axios";
 
 import useRequest from '../hooks/UseRequest';
-
-var treeData = {
-    id: 'root',
-    name: 'Parent',
-    children: [],
-};
 
 
 const useStyles = makeStyles({
     root: {
-        height: 110,
         flexGrow: 1,
         maxWidth: 400,
         margin: 20,
+        padding: 20,
+        fontSize: "15px",
     },
+    label:{
+        padding: "2px",
+        fontSize: "15px"
+    }
 });
 
 
 
 export default function DrawerTreeView(props:any) {
     const classes = useStyles();
-    const treeArr: [] =[]
+    let treeArr: [] =[]
 
     const [response, loading, error] = useRequest(
-        '/categories'
+        '/v1/search/categories'
     );
 
     if (loading) {
@@ -45,27 +42,18 @@ export default function DrawerTreeView(props:any) {
 
     if (!response) return null;
     else{
-
         // @ts-ignore
-        response.data.forEach((treeItem: object) => {
-            // @ts-ignore
-            treeArr.push(Object.values(treeItem).pop())
-        })
-        // treeData = treeArr
+        treeArr = response.data
     }
 
-
-
-    function clicked(event:any){
-        console.log("clicked: ", event.target.getAttribute('id'))
-    }
 
 
     const renderTree = (nodes: { id: any; name: any; children: any; cid: any;}) => (
         <TreeItem key={nodes.id} nodeId={nodes.id} label={nodes.name} id={nodes.cid}
+                  classes={{ label: classes.label }}
+                  aria-selected={true}
                   onClick = {(e) =>{
-                  if(nodes.children.length==0){
-                      console.log (nodes.cid)
+                  if(nodes.children.length===0){
                       props.setCatId(nodes.cid)
                   }
                   }}
@@ -80,6 +68,7 @@ export default function DrawerTreeView(props:any) {
             defaultCollapseIcon={<ExpandMoreIcon />}
             defaultExpanded={['root']}
             defaultExpandIcon={<ChevronRightIcon />}
+
         >
             {
                 treeArr.map((treeData, idx) => {

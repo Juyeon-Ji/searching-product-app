@@ -1,6 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import {makeStyles, useTheme} from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -19,6 +19,11 @@ const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
+    },
+    title: {
+        textAlign: 'center',
+        margin: 10,
+        padding: 10,
     },
     appBar: {
         zIndex: theme.zIndex.drawer + 1,
@@ -92,9 +97,6 @@ export default function DrawerView(props:any) {
     };
 
     const setCatId = (catid:any) =>{
-        console.log("here is drawerView")
-        // @ts-ignore
-        console.log(catid)
         props.setCatId(catid)
     }
 
@@ -119,7 +121,7 @@ export default function DrawerView(props:any) {
                     >
                         <MenuIcon />
                     </IconButton>
-                    <Typography variant="h6" noWrap>
+                    <Typography variant="h4" noWrap>
                         Product Viewer
                     </Typography>
 
@@ -139,6 +141,9 @@ export default function DrawerView(props:any) {
                 }}
             >
                 <div className={classes.toolbar}>
+                    <Typography variant="h3" className={classes.title} gutterBottom>
+                        Category
+                    </Typography>
                     <IconButton onClick={handleDrawerClose}>
                         {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
                     </IconButton>

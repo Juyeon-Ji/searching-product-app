@@ -1,14 +1,11 @@
-import React, {useState} from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import React from 'react';
+import {makeStyles} from '@material-ui/core/styles';
 
 import Pagination from '@material-ui/lab/Pagination';
-import useRequest from "../hooks/UseRequest";
-
 
 
 const useStyles = makeStyles((theme) =>({
     paginationDiv:{
-        padding: 20,
         width: '100%',
         alignItems: 'center',
         justifyContent: 'center',
@@ -25,9 +22,10 @@ const useStyles = makeStyles((theme) =>({
 export default function PaginationView(props:any) {
     const classes = useStyles();
 
-    const pageCount = props? props.pageCount : 1
+    const pageCount:number = props? parseInt(props.pageCount) : 1
+
+
     const click = (e: any, value: any) => {
-        console.log(value)
         props.setPageNumber(value)
     };
 

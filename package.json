@@ -2,7 +2,7 @@
   "name": "search-product-app",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://10.105.2.75:8080",
+  "proxy": "http://10.106.7.56:8080",
   "dependencies": {
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2",
@@ -22,6 +22,7 @@
     "react-async": "^10.0.1",
     "react-async-hook": "^3.6.2",
     "react-redux": "^7.2.3",
+    "react-script": "^2.0.5",
     "react-scripts": "^4.0.3",
     "redux": "^4.0.5",
     "redux-devtools-extension": "^2.13.9",

@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import React from 'react';
+import {makeStyles} from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -9,20 +9,20 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 
 // import PaginationView from "./PaginationView";
-import UseRequest from "../hooks/UseRequest";
 // import {numbers} from "@material/top-app-bar/constants";
 // import axios from "axios";
-
 const useStyles = makeStyles((theme) =>({
     table: {
         minWidth: 650,
     },
+    fontSize:{
+        fontSize: "12px",
+    },
+    container: {
+        height: "75em",
+    },
 }));
 
-
-const rowData = [
-    createData("24", "https://shopping-phinf.pstatic.net/main_1805448/18054489982.20210303172646.jpg?type=f640",
-        "더블에이 A4용지 복사용지 80g 2500매", {})]
 
 const columnsData = [
         {
@@ -43,10 +43,6 @@ const columnsData = [
     ]
 
 
-function createData(id:string, imageUrl:string, title: string,   option:object) {
-    return { id, imageUrl,title, option };
-}
-
 function optionView(optionData: object){
     if(optionData){
         let optionString = ""
@@ -54,7 +50,7 @@ function optionView(optionData: object){
         Object.keys(optionData).forEach(function(key, index) {
             // @ts-ignore
             optionString += (key + ": " + optionData[key])
-            if(index+1 != Object.keys(optionData).length){
+            if(index+1 !== Object.keys(optionData).length){
                 optionString += " | "
             }
         })
@@ -74,27 +70,28 @@ export default function ProductsTable(props:any) {
 
     return (
         <div>
-            <TableContainer component={Paper}>
-                <Table className={classes.table} aria-label="simple table">
+            <TableContainer component={Paper} className={classes.container}>
+                <Table stickyHeader aria-label="sticky table">
                     <TableHead>
                         <TableRow>
                             {columnsData.map(({field, headerName, width}) => (
-                                <TableCell key={field} align="center" style={{maxWidth: width}}>{headerName}</TableCell>
+                                <TableCell key={field} align="center" style={{maxWidth: width}} className={classes.fontSize}>
+                                    {headerName}
+                                </TableCell>
                             ))}
                         </TableRow>
                     </TableHead>
                     <TableBody key={"tableBody"}>
 
                         {rowData.map(({id, imageUrl, title, option}) => (
-                            <TableRow key={id}>
+                            <TableRow key={id} >
                                 <TableCell align="center" component="th" scope="row" style={{maxWidth: "1em" }}>
-                                    <img src={imageUrl} style={{maxHeight: "5em", maxWidth: "5em"}}/>
+                                    <img alt="products img" src={imageUrl} style={{maxHeight: "5em", maxWidth: "5em"}}/>
                                 </TableCell>
-                                <TableCell align="left" style={{maxWidth: "10em"}}>{title}</TableCell>
+                                <TableCell align="left" style={{maxWidth: "10em"}}className={classes.fontSize}>{title}</TableCell>
 
-                                <TableCell align="left" style={{maxWidth: "10em"}}>
+                                <TableCell align="center" style={{maxWidth: "10em"}} className={classes.fontSize}>
                                     {optionView(option)}
-                                    {/*{option?<p>test</p> : <p>-</p>}*/}
                                 </TableCell>
 
                             </TableRow>
@@ -102,7 +99,6 @@ export default function ProductsTable(props:any) {
                     </TableBody>
                 </Table>
             </TableContainer>
-
 
         </div>
 
